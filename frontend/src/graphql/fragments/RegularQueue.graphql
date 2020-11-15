@@ -1,0 +1,11 @@
+fragment RegularQueue on Queue {
+  id
+  createdAt
+  updatedAt
+  title
+  descriptionSnippet
+  slips {
+    id
+    processed
+  }
+}

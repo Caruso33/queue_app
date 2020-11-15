@@ -1,0 +1,10 @@
+fragment RegularUser on User {
+  id
+  username
+  email
+  adminOfQueues {
+    id
+    title
+    descriptionSnippet
+  }
+}

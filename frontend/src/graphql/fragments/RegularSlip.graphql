@@ -1,0 +1,18 @@
+fragment RegularSlip on Slip {
+  id
+
+  createdAt
+  updatedAt
+
+  processed
+  active
+
+  initialQueueSize
+  queuePosition
+
+  queue {
+    id
+    title
+    descriptionSnippet
+  }
+}
