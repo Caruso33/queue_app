@@ -1,15 +1,16 @@
 FROM node:alpine
 
-WORKDIR '/app'
+WORKDIR /app
 
 COPY package.json .
+COPY yarn.lock .
 
-RUN npm i
+RUN yarn
 
-COPY ./src .
+COPY . .
 
-RUN npm run build
+RUN yarn build
+
+CMD ["yarn start"]
 
 EXPOSE 4000
-
-CMD ["npm", "run", "start"]

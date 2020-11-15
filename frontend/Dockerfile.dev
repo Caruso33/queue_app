@@ -1,11 +1,12 @@
 FROM node:alpine
 
-WORKDIR '/app'
+WORKDIR /app
 
 COPY package.json .
+COPY yarn.lock .
 
-RUN npm i
+RUN yarn
 
 COPY . .
 
-CMD ["npm", "run", "dev"]
+CMD ["yarn", "dev"]

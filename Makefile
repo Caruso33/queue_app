@@ -15,5 +15,4 @@ stop:
 	@docker stop $$(docker ps -a -q)
 
 logs: 
-	@echo $(ACME_EMAIL)
 	@docker-compose logs -f
