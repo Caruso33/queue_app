@@ -2,25 +2,19 @@ version: "3"
 services:
   frontend:
     container_name: frontend
-    build:
-      context: frontend
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
+    build: ./frontend
+
     volumes:
       - /app/node_modules
       - ./frontend:/app
 
-  # server:
-  #   container_name: server
-  #   build:
-  #     context: server
-  #     dockerfile: Dockerfile
-  #   ports: 
-  #     - "4000:4000"
-  #   volumes:
-  #     - /app/node_modules
-  #     - ./server:/app
+  server:
+    container_name: server
+    build: ./server
+    
+    volumes:
+      - /app/node_modules
+      - ./server:/app
 
   # tests:
   #   build:
