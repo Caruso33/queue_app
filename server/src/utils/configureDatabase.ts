@@ -21,9 +21,6 @@ const getTypeOrmConfig = (): ConnectionOptions => {
     database: process.env.DATABASE,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    // logging: true,
-    synchronize: true,
-    // entities: [User, Queue, Slip, AdminQueue],
     entities: [path.join(__dirname, "..", "./entities/*")],
     migrations: [path.join(__dirname, "..", "./migrations/*")],
   }

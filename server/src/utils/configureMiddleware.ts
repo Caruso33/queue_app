@@ -16,6 +16,8 @@ export default function configureMiddleWare(
 ) {
   const { RedisStore, redis } = other
 
+  app.set("proxy", 1) // we have nginx / traefik proxy in front of express
+
   app.use(
     cors({
       origin: process.env.FRONTEND_DOMAIN,

@@ -1,5 +1,4 @@
 import argon2 from "argon2"
-import { Queue } from "../entities/Queue"
 import {
   Arg,
   Ctx,
@@ -13,6 +12,7 @@ import {
 } from "type-graphql"
 import { v4 } from "uuid"
 import { AdminQueue } from "../entities/AdminQueue"
+import { Queue } from "../entities/Queue"
 import { User } from "../entities/User"
 import { MyContext } from "../types/types"
 import { UsernamePasswordInput, UserResponse } from "../types/user"
@@ -24,11 +24,7 @@ import {
   validateRegister,
 } from "../validations/user"
 import { isAdminOfQueue, isAuth } from "./../middleware/authentication"
-import {
-  cookieName,
-  forgetPasswordPrefix,
-  frontendDomain,
-} from "./../utils/constants"
+import { cookieName, forgetPasswordPrefix } from "./../utils/constants"
 
 @Resolver(() => User)
 export class UserResolver {

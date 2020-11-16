@@ -21,7 +21,7 @@ const main = async () => {
   const httpServer = http.createServer(app)
   apolloServer.installSubscriptionHandlers(httpServer)
 
-  const port = parseInt(process.env.PORT) || 4000
+  const port = parseInt(process.env.PORT)
   httpServer.listen(port, () => {
     console.log(`
     express \t\t\t>> localhost:${port}
