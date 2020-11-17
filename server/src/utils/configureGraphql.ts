@@ -23,23 +23,7 @@ export default async function configureGraphql(
     }),
     subscriptions: {
       onConnect: async (_connectionParams: any, _webSocket, _context) => {
-        // if (!_connectionParams?.session) {
-        //   throw new Error("no session found")
-        // }
-
-        // const userId = _connectionParams!.session?.userId
-
-        // if (!userId) {
-        //   throw new Error("not authenticated")
-        // }
-
-        // const user = await User.findOne(userId)
-
-        // if (!user) {
-        //   throw new Error("user does not exist")
-        // }
-
-        console.log("Connected to websocket")
+        onSubscriptionConnect()
       },
       onDisconnect: () => console.log("Disconnected from websocket"),
     },
@@ -59,4 +43,24 @@ export default async function configureGraphql(
   apolloServer.applyMiddleware({ app, cors: false })
 
   return { apolloServer }
+}
+
+function onSubscriptionConnect() {
+  // if (!_connectionParams?.session) {
+  //   throw new Error("no session found")
+  // }
+
+  // const userId = _connectionParams!.session?.userId
+
+  // if (!userId) {
+  //   throw new Error("not authenticated")
+  // }
+
+  // const user = await User.findOne(userId)
+
+  // if (!user) {
+  //   throw new Error("user does not exist")
+  // }
+
+  console.log("Connected to websocket")
 }

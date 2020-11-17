@@ -1,20 +1,29 @@
 version: "3"
 services:
-  frontend:
-    container_name: frontend
-    build: ./frontend
+  # frontend:
+  #   container_name: frontend
+  #   build: ./frontend
+  #   restart: unless-stopped
 
-    volumes:
-      - /app/node_modules
-      - ./frontend:/app
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./frontend:/app
 
-  server:
-    container_name: server
-    build: ./server
-    
-    volumes:
-      - /app/node_modules
-      - ./server:/app
+  # server:
+  #   container_name: server
+  #   build: ./server
+  #   restart: unless-stopped
+
+  #   environment:
+  #     redis_server_addr: redis
+
+  #   volumes:
+  #     - /app/node_modules
+  #     - ./server:/app
+
+  #   depends_on:
+  #     - postgres
+  #     - redis
 
   postgres:
     container_name: postgres
@@ -26,11 +35,10 @@ services:
 
     volumes:
       - ./server/data/postgres:/var/lib/postgresql/data
-    
+
     environment:
       POSTGRES_USER: postgres_user
       POSTGRES_PASSWORD: postgres_pw
-    
 
   redis:
     container_name: redis
@@ -38,7 +46,7 @@ services:
 
     # command: ["redis-server", "--appendonly", "yes"]
     command: ["redis-server", "--bind", "redis", "--port", "6379"]
-    
+
     restart: unless-stopped
 
     ports:
