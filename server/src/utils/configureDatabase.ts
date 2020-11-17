@@ -1,34 +1,30 @@
 import connectRedis from "connect-redis"
 import session from "express-session"
-import Redis from "ioredis"
-import path from "path"
-import { Connection, ConnectionOptions, createConnection } from "typeorm"
 import { RedisPubSub } from "graphql-redis-subscriptions"
+import Redis from "ioredis"
+import { Connection, ConnectionOptions, createConnection } from "typeorm"
+
+const ormConfig: ConnectionOptions = require("../../ormconfig")
 
 export default async function configureDB() {
-  const orm = await createConnection(getTypeOrmConfig())
+  const orm = await createConnection(ormConfig)
+
+  const redisClient = new Redis({
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT as string),
+  })
+
   const RedisStore = connectRedis(session)
 
-  const redis = new Redis()
+  const redisStore = new RedisStore({ client: redisClient })
   const redisPubsub = new RedisPubSub()
 
-  return { RedisStore, redis, redisPubsub, orm }
-}
-
-const getTypeOrmConfig = (): ConnectionOptions => {
-  return {
-    type: "postgres",
-    database: process.env.DATABASE,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    entities: [path.join(__dirname, "..", "./entities/*")],
-    migrations: [path.join(__dirname, "..", "./migrations/*")],
-  }
+  return { redisStore, redisClient, redisPubsub, orm }
 }
 
 export interface ConfigureDBInterface {
-  RedisStore: connectRedis.RedisStore
-  redis: Redis.Redis
+  redisStore: connectRedis.RedisStore
+  redisClient: Redis.Redis
   redisPubsub: RedisPubSub
   orm: Connection
 }

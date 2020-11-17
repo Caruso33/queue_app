@@ -13,7 +13,7 @@ import { MyContext } from "../types/types"
 
 export default async function configureGraphql(
   app: Express,
-  { redis, redisPubsub }: { redis: Redis; redisPubsub: RedisPubSub }
+  { redisClient, redisPubsub }: { redisClient: Redis; redisPubsub: RedisPubSub }
 ) {
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
@@ -47,7 +47,7 @@ export default async function configureGraphql(
       return {
         req,
         res,
-        redis,
+        redis: redisClient,
         userLoader: createUserLoader(),
         slipFromQueueLoader: createSlipFromQueueLoader(),
         userFromQueueAdminLoader: createUserFromQueueAdminLoader(),

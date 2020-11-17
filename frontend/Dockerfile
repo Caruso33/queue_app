@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:lts-alpine
 
 WORKDIR /app
 
@@ -7,10 +7,10 @@ COPY yarn.lock .
 
 RUN yarn
 
-COPY ./src .
+COPY . .
 
 RUN yarn build
 
-EXPOSE 3000
-
 CMD ["yarn", "start"]
+
+EXPOSE 3000

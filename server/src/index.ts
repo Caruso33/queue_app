@@ -8,20 +8,21 @@ import configureMiddleWare from "./utils/configureMiddleware"
 
 const main = async () => {
   const dbInterface: ConfigureDBInterface = await configureDB()
-  const { RedisStore, redis, redisPubsub, orm } = dbInterface
+  const { redisStore, redisClient, redisPubsub, orm } = dbInterface
 
   await orm.runMigrations()
 
   const app = express()
 
-  configureMiddleWare(app, { RedisStore, redis })
+  configureMiddleWare(app, { redisStore })
 
-  const { apolloServer } = await configureGraphql(app, { redis, redisPubsub })
+  const { apolloServer } = await configureGraphql(app, { redisClient, redisPubsub })
 
   const httpServer = http.createServer(app)
   apolloServer.installSubscriptionHandlers(httpServer)
 
-  const port = parseInt(process.env.PORT)
+  const port = parseInt(process.env.SERVER_PORT as string)
+
   httpServer.listen(port, () => {
     console.log(`
     express \t\t\t>> localhost:${port}

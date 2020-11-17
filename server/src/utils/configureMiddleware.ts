@@ -2,19 +2,17 @@ import { RedisStore } from "connect-redis"
 import cors from "cors"
 import { Express } from "express"
 import session from "express-session"
-import { Redis } from "ioredis"
 import { cookieName, __prod__ } from "./constants"
 
 interface RedisInterface {
-  RedisStore: RedisStore
-  redis: Redis
+  redisStore: RedisStore
 }
 
 export default function configureMiddleWare(
   app: Express,
   other: RedisInterface
 ) {
-  const { RedisStore, redis } = other
+  const { redisStore } = other
 
   app.set("proxy", 1) // we have nginx / traefik proxy in front of express
 
@@ -27,7 +25,7 @@ export default function configureMiddleWare(
   app.use(
     session({
       name: cookieName,
-      store: new RedisStore({ client: redis }),
+      store: redisStore,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 30, // one month
         httpOnly: true, // don't let the FE client access the cookie
