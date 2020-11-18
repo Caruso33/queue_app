@@ -1,16 +1,13 @@
 import { Box, Button, Flex, useToast } from "@chakra-ui/core"
 import { Form, Formik, FormikProps } from "formik"
-import { withUrqlClient } from "next-urql"
 import { useRouter } from "next/router"
 import React from "react"
 import InputField from "../components/InputField"
 import Layout from "../components/Layout"
-import PageWrapper from "../components/PageWrapper"
 import {
   useForgotPasswordMutation,
   useLoginMutation,
 } from "../generated/graphql"
-import { createUrqlClient } from "../utils/createUrqlClient"
 import { toErrorMap } from "../utils/toErrorMap"
 
 interface LoginProps {}
@@ -20,8 +17,8 @@ const Login: React.FC<LoginProps> = () => {
 
   const toast = useToast()
 
-  const [, login] = useLoginMutation()
-  const [{ fetching }, forgotPassword] = useForgotPasswordMutation()
+  const [login] = useLoginMutation()
+  const [forgotPassword, { loading }] = useForgotPasswordMutation()
 
   const onForgotPassword = (
     props: FormikProps<{
@@ -43,7 +40,7 @@ const Login: React.FC<LoginProps> = () => {
       return
     }
 
-    forgotPassword({ email: field.value }).then(({ data }) => {
+    forgotPassword({ variables: { email: field.value } }).then(({ data }) => {
       if (data?.forgotPassword)
         toast({
           title: "Forgot Password Email Send.",
@@ -70,7 +67,7 @@ const Login: React.FC<LoginProps> = () => {
         initialValues={{ usernameOrEmail: "", password: "" }}
         initialTouched={{ usernameOrEmail: true }}
         onSubmit={async (values, actions) => {
-          const response = await login(values)
+          const response = await login({ variables: values })
 
           if (response.data?.login.errors) {
             actions.setErrors(toErrorMap(response.data.login.errors))
@@ -106,7 +103,7 @@ const Login: React.FC<LoginProps> = () => {
 
               <Button
                 onClick={() => onForgotPassword(props)}
-                isLoading={fetching}
+                isLoading={loading}
               >
                 Forgot Password?
               </Button>
@@ -118,4 +115,4 @@ const Login: React.FC<LoginProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(Login)
+export default Login

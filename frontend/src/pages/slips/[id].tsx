@@ -1,11 +1,9 @@
-import { Flex, Spinner, Box, Button } from "@chakra-ui/core"
-import { withUrqlClient } from "next-urql"
+import { Box, Button, Flex, Spinner } from "@chakra-ui/core"
 import { useRouter } from "next/router"
 import React from "react"
-import { getLocalStringFromUnix } from "../../utils/date"
 import Layout from "../../components/Layout"
-import { useQueueQuery, useSlipQuery } from "../../generated/graphql"
-import { createUrqlClient } from "../../utils/createUrqlClient"
+import { useSlipQuery } from "../../generated/graphql"
+import { getLocalStringFromUnix } from "../../utils/date"
 
 interface SlipProps {}
 
@@ -13,7 +11,7 @@ const Queues: React.FC<SlipProps> = (props) => {
   const router = useRouter()
   const { id } = router.query
 
-  const [{ data, fetching }] = useSlipQuery({
+  const { data, loading } = useSlipQuery({
     variables: { id: parseInt(id) },
   })
 
@@ -37,7 +35,7 @@ const Queues: React.FC<SlipProps> = (props) => {
       </Box>
 
       <Flex align="center" direction="column" mt={5}>
-        {fetching ? (
+        {loading ? (
           <Spinner />
         ) : (
           <>
@@ -51,4 +49,4 @@ const Queues: React.FC<SlipProps> = (props) => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(Queues)
+export default Queues

@@ -1,12 +1,10 @@
 import { Box, Button, useToast } from "@chakra-ui/core"
 import { Form, Formik } from "formik"
-import { withUrqlClient } from "next-urql"
 import { useRouter } from "next/router"
 import React from "react"
 import InputField from "../components/InputField"
 import Layout from "../components/Layout"
 import { useCreateQueueMutation } from "../generated/graphql"
-import { createUrqlClient } from "../utils/createUrqlClient"
 import { useIsAuth } from "../utils/useIsAuth"
 
 interface CreateQueueProps {}
@@ -16,7 +14,7 @@ const CreateQueue: React.FC<CreateQueueProps> = () => {
 
   useIsAuth()
 
-  const [, createQueue] = useCreateQueueMutation()
+  const [createQueue] = useCreateQueueMutation()
 
   const toast = useToast()
 
@@ -74,4 +72,4 @@ const CreateQueue: React.FC<CreateQueueProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(CreateQueue)
+export default CreateQueue

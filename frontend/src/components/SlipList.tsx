@@ -1,21 +1,19 @@
-import { useUnSubscribeFromQueueMutation } from "./../generated/graphql"
 import {
   Box,
   Button,
-  Text,
-  Link,
+  Flex,
   Heading,
+  Link,
   Spinner,
   Stack,
-  Flex,
+  Text,
 } from "@chakra-ui/core"
 import NextLink from "next/link"
-import { withUrqlClient } from "next-urql"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
 import { useSlipsQuery } from "../generated/graphql"
-import { createUrqlClient } from "../utils/createUrqlClient"
 import { useIsAuth } from "../utils/useIsAuth"
+import { useUnSubscribeFromQueueMutation } from "./../generated/graphql"
 
 interface SlipListProps {}
 
@@ -26,8 +24,8 @@ const SlipList: React.FC<SlipListProps> = () => {
 
   const [pagination, setPagination] = useState({ limit: 10, cursor: "" })
 
-  const [{ data, fetching }] = useSlipsQuery({ variables: pagination })
-  const [, unsubscribeFromQueue] = useUnSubscribeFromQueueMutation()
+  const { data, loading } = useSlipsQuery({ variables: pagination })
+  const [unsubscribeFromQueue] = useUnSubscribeFromQueueMutation()
 
   const onLoadMore = () => {
     const slips = data?.slips?.slips
@@ -37,7 +35,7 @@ const SlipList: React.FC<SlipListProps> = () => {
 
   const navigateToQueueList = () => router.push("/queues")
 
-  if (!fetching && data?.slips?.slips?.length === 0) {
+  if (!loading && data?.slips?.slips?.length === 0) {
     return (
       <Flex my={4}>
         <Heading size="lg">No slips present. Subscribe to a Queue?</Heading>
@@ -71,7 +69,7 @@ const SlipList: React.FC<SlipListProps> = () => {
       </Box>
 
       <Box>
-        {fetching && !data ? (
+        {loading && !data ? (
           <Flex>
             <Spinner m="auto" />
           </Flex>
@@ -135,8 +133,8 @@ const SlipList: React.FC<SlipListProps> = () => {
         <Button
           my={8}
           onClick={onLoadMore}
-          isDisabled={fetching}
-          isLoading={fetching}
+          isDisabled={loading}
+          isLoading={loading}
         >
           <Text>Load More...</Text>
         </Button>
@@ -145,4 +143,4 @@ const SlipList: React.FC<SlipListProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(SlipList)
+export default SlipList

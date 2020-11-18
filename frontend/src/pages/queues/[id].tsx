@@ -1,11 +1,9 @@
 import { Box, Button, Flex, Spinner, Text } from "@chakra-ui/core"
-import { withUrqlClient } from "next-urql"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { StoreContext } from "state/app"
 import Layout from "../../components/Layout"
 import { useQueueQuery } from "../../generated/graphql"
-import { createUrqlClient } from "../../utils/createUrqlClient"
 import { getLocalStringFromUnix } from "../../utils/date"
 
 interface QueueProps {}
@@ -14,7 +12,7 @@ const Queues: React.FC<QueueProps> = () => {
   const router = useRouter()
   const { id } = router.query
 
-  const [{ data, fetching }] = useQueueQuery({
+  const { data, loading } = useQueueQuery({
     variables: { id: parseInt(id as string) },
   })
 
@@ -32,7 +30,7 @@ const Queues: React.FC<QueueProps> = () => {
     : "-"
 
   const slips = queue?.slips
-console.log('user', user)
+
   return (
     <Layout>
       <Box>
@@ -42,7 +40,7 @@ console.log('user', user)
       </Box>
 
       <Flex align="center" direction="column" mt={5}>
-        {fetching ? (
+        {loading ? (
           <Spinner />
         ) : (
           <>
@@ -69,4 +67,4 @@ console.log('user', user)
   )
 }
 
-export default withUrqlClient(createUrqlClient)(Queues)
+export default Queues

@@ -1,15 +1,14 @@
 import {
   Box,
   Button,
-  Text,
+  Flex,
   Heading,
   Link,
   Spinner,
   Stack,
-  Flex,
+  Text,
   useToast,
 } from "@chakra-ui/core"
-import { withUrqlClient } from "next-urql"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
@@ -17,7 +16,6 @@ import {
   useQueuesQuery,
   useSubscribeToQueueMutation,
 } from "../generated/graphql"
-import { createUrqlClient } from "../utils/createUrqlClient"
 import { useIsAuth } from "../utils/useIsAuth"
 
 interface QueueListProps {}
@@ -32,8 +30,8 @@ const QueueList: React.FC<QueueListProps> = () => {
 
   const [pagination, setPagination] = useState({ limit: 10, cursor: "" })
 
-  const [{ data, fetching }] = useQueuesQuery({ variables: pagination })
-  const [, subscribeToQueue] = useSubscribeToQueueMutation()
+  const { data, loading } = useQueuesQuery({ variables: pagination })
+  const [subscribeToQueue] = useSubscribeToQueueMutation()
 
   const onLoadMore = () => {
     const queues = data?.queues?.queues
@@ -41,7 +39,7 @@ const QueueList: React.FC<QueueListProps> = () => {
     setPagination({ ...pagination, cursor: lastQueueCursor })
   }
 
-  if (!fetching && !data?.queues?.queues?.length === 0) {
+  if (!loading && !data?.queues?.queues?.length === 0) {
     return (
       <Box my={4}>
         <Text>No queues present. Create one?</Text>
@@ -77,7 +75,7 @@ const QueueList: React.FC<QueueListProps> = () => {
       </Box>
 
       <Box>
-        {fetching && !data ? (
+        {loading && !data ? (
           <Flex>
             <Spinner m="auto" />
           </Flex>
@@ -139,8 +137,8 @@ const QueueList: React.FC<QueueListProps> = () => {
         <Button
           my={8}
           onClick={onLoadMore}
-          isDisabled={fetching}
-          isLoading={fetching}
+          isDisabled={loading}
+          isLoading={loading}
         >
           <Text>Load More...</Text>
         </Button>
@@ -149,4 +147,4 @@ const QueueList: React.FC<QueueListProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(QueueList)
+export default QueueList

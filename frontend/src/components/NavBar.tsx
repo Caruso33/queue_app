@@ -1,3 +1,4 @@
+import { useApolloClient } from "@apollo/client"
 import {
   Box,
   Button,
@@ -7,37 +8,38 @@ import {
   Spinner,
   theme,
 } from "@chakra-ui/core"
-import { withUrqlClient } from "next-urql"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 import { StoreContext } from "state/app"
 import { useIsAuth } from "utils/useIsAuth"
-import { useLogoutMutation } from "../generated/graphql"
-import { createUrqlClient } from "../utils/createUrqlClient"
+import { useLogoutMutation, User } from "../generated/graphql"
 
 interface NavBarProps {}
 
 const NavBar: React.FC<NavBarProps> = () => {
   const router = useRouter()
-  const { fetching } = useIsAuth()
+  const { loading } = useIsAuth()
 
-  const [{ fetching: fetchingLogout }, logout] = useLogoutMutation()
+  const [logout, { loading: fetchingLogout }] = useLogoutMutation()
 
-  const onLogout = () => {
-    dispatch({ type: "logout" })
-    logout()
-    router.push("/login?next=/")
-  }
+  const apollo = useApolloClient()
 
   const {
     state: { user },
     dispatch,
   } = useContext(StoreContext)
 
+  const onLogout = async () => {
+    await apollo.resetStore()
+    dispatch({ type: "logout" })
+    logout()
+    router.push("/login?next=/")
+  }
+
   let body = null
 
-  if (fetching && !user?.id) {
+  if (loading && !user?.id) {
     body = <Spinner />
   } else if (!user?.id) {
     body = <NotLoggedIn />
@@ -76,7 +78,7 @@ const NavBar: React.FC<NavBarProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(NavBar)
+export default NavBar
 
 function NotLoggedIn() {
   return (
@@ -92,7 +94,15 @@ function NotLoggedIn() {
   )
 }
 
-function LoggedIn({ fetchingLogout, onLogout, user }) {
+function LoggedIn({
+  fetchingLogout,
+  onLogout,
+  user,
+}: {
+  fetchingLogout: boolean
+  onLogout: () => {}
+  user: User
+}) {
   return (
     <Flex>
       <Button

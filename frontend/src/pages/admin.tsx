@@ -1,10 +1,8 @@
 import { Box, Heading, Link, Stack, Text } from "@chakra-ui/core"
-import { withUrqlClient } from "next-urql"
 import NextLink from "next/link"
 import React from "react"
 import { useIsAuth } from "utils/useIsAuth"
 import Layout from "../components/Layout"
-import { createUrqlClient } from "../utils/createUrqlClient"
 
 interface AdminProps {}
 
@@ -41,4 +39,4 @@ function Admin(): React.FC<AdminProps> {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(Admin)
+export default Admin

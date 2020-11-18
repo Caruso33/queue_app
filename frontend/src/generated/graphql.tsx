@@ -1,8 +1,7 @@
-import gql from 'graphql-tag';
-import * as Urql from 'urql';
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -20,10 +19,10 @@ export type User = {
   email: Scalars['String'];
   username: Scalars['String'];
   isSuperAdmin: Scalars['Boolean'];
-  adminOfQueues?: Maybe<Array<Queue>>;
   slips?: Maybe<Array<Slip>>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  adminOfQueues: Array<Queue>;
 };
 
 export type Slip = {
@@ -45,11 +44,19 @@ export type Queue = {
   id: Scalars['Int'];
   title: Scalars['String'];
   description: Scalars['String'];
-  admins: Array<User>;
   slips?: Maybe<Array<Slip>>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  admins: Array<User>;
   descriptionSnippet: Scalars['String'];
+};
+
+export type AdminQueue = {
+  __typename?: 'AdminQueue';
+  userId: Scalars['Float'];
+  user: User;
+  queueId: Scalars['Float'];
+  queue: Queue;
 };
 
 export type PaginatedQueues = {
@@ -151,6 +158,8 @@ export type Mutation = {
   logout: Scalars['Boolean'];
   forgotPassword: Scalars['Boolean'];
   changeForgotPassword: UserResponse;
+  addAdmin?: Maybe<AdminQueue>;
+  removeAdmin?: Maybe<AdminQueue>;
 };
 
 
@@ -224,6 +233,18 @@ export type MutationChangeForgotPasswordArgs = {
   token: Scalars['String'];
 };
 
+
+export type MutationAddAdminArgs = {
+  userId: Scalars['Float'];
+  queueId: Scalars['Float'];
+};
+
+
+export type MutationRemoveAdminArgs = {
+  userId: Scalars['Float'];
+  queueId: Scalars['Float'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   queueUpdate: Scalars['Int'];
@@ -270,10 +291,10 @@ export type RegularSlipFragment = (
 export type RegularUserFragment = (
   { __typename?: 'User' }
   & Pick<User, 'id' | 'username' | 'email'>
-  & { adminOfQueues?: Maybe<Array<(
+  & { adminOfQueues: Array<(
     { __typename?: 'Queue' }
     & Pick<Queue, 'id' | 'title' | 'descriptionSnippet'>
-  )>> }
+  )> }
 );
 
 export type RegularUserResponseFragment = (
@@ -524,10 +545,32 @@ export const ChangeForgotPasswordDocument = gql`
   }
 }
     ${RegularUserResponseFragmentDoc}`;
+export type ChangeForgotPasswordMutationFn = Apollo.MutationFunction<ChangeForgotPasswordMutation, ChangeForgotPasswordMutationVariables>;
 
-export function useChangeForgotPasswordMutation() {
-  return Urql.useMutation<ChangeForgotPasswordMutation, ChangeForgotPasswordMutationVariables>(ChangeForgotPasswordDocument);
-};
+/**
+ * __useChangeForgotPasswordMutation__
+ *
+ * To run a mutation, you first call `useChangeForgotPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useChangeForgotPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [changeForgotPasswordMutation, { data, loading, error }] = useChangeForgotPasswordMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *      newPassword: // value for 'newPassword'
+ *   },
+ * });
+ */
+export function useChangeForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ChangeForgotPasswordMutation, ChangeForgotPasswordMutationVariables>) {
+        return Apollo.useMutation<ChangeForgotPasswordMutation, ChangeForgotPasswordMutationVariables>(ChangeForgotPasswordDocument, baseOptions);
+      }
+export type ChangeForgotPasswordMutationHookResult = ReturnType<typeof useChangeForgotPasswordMutation>;
+export type ChangeForgotPasswordMutationResult = Apollo.MutationResult<ChangeForgotPasswordMutation>;
+export type ChangeForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ChangeForgotPasswordMutation, ChangeForgotPasswordMutationVariables>;
 export const CreateQueueDocument = gql`
     mutation CreateQueue($options: QueueInput!) {
   createQueue(options: $options) {
@@ -535,19 +578,61 @@ export const CreateQueueDocument = gql`
   }
 }
     ${RegularQueueFragmentDoc}`;
+export type CreateQueueMutationFn = Apollo.MutationFunction<CreateQueueMutation, CreateQueueMutationVariables>;
 
-export function useCreateQueueMutation() {
-  return Urql.useMutation<CreateQueueMutation, CreateQueueMutationVariables>(CreateQueueDocument);
-};
+/**
+ * __useCreateQueueMutation__
+ *
+ * To run a mutation, you first call `useCreateQueueMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateQueueMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createQueueMutation, { data, loading, error }] = useCreateQueueMutation({
+ *   variables: {
+ *      options: // value for 'options'
+ *   },
+ * });
+ */
+export function useCreateQueueMutation(baseOptions?: Apollo.MutationHookOptions<CreateQueueMutation, CreateQueueMutationVariables>) {
+        return Apollo.useMutation<CreateQueueMutation, CreateQueueMutationVariables>(CreateQueueDocument, baseOptions);
+      }
+export type CreateQueueMutationHookResult = ReturnType<typeof useCreateQueueMutation>;
+export type CreateQueueMutationResult = Apollo.MutationResult<CreateQueueMutation>;
+export type CreateQueueMutationOptions = Apollo.BaseMutationOptions<CreateQueueMutation, CreateQueueMutationVariables>;
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email)
 }
     `;
+export type ForgotPasswordMutationFn = Apollo.MutationFunction<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
 
-export function useForgotPasswordMutation() {
-  return Urql.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument);
-};
+/**
+ * __useForgotPasswordMutation__
+ *
+ * To run a mutation, you first call `useForgotPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useForgotPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [forgotPasswordMutation, { data, loading, error }] = useForgotPasswordMutation({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>) {
+        return Apollo.useMutation<ForgotPasswordMutation, ForgotPasswordMutationVariables>(ForgotPasswordDocument, baseOptions);
+      }
+export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
+export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
+export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
 export const LoginDocument = gql`
     mutation Login($usernameOrEmail: String!, $password: String!) {
   login(usernameOrEmail: $usernameOrEmail, password: $password) {
@@ -555,19 +640,61 @@ export const LoginDocument = gql`
   }
 }
     ${RegularUserResponseFragmentDoc}`;
+export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutationVariables>;
 
-export function useLoginMutation() {
-  return Urql.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument);
-};
+/**
+ * __useLoginMutation__
+ *
+ * To run a mutation, you first call `useLoginMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLoginMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [loginMutation, { data, loading, error }] = useLoginMutation({
+ *   variables: {
+ *      usernameOrEmail: // value for 'usernameOrEmail'
+ *      password: // value for 'password'
+ *   },
+ * });
+ */
+export function useLoginMutation(baseOptions?: Apollo.MutationHookOptions<LoginMutation, LoginMutationVariables>) {
+        return Apollo.useMutation<LoginMutation, LoginMutationVariables>(LoginDocument, baseOptions);
+      }
+export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
+export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
+export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const LogoutDocument = gql`
     mutation Logout {
   logout
 }
     `;
+export type LogoutMutationFn = Apollo.MutationFunction<LogoutMutation, LogoutMutationVariables>;
 
-export function useLogoutMutation() {
-  return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
-};
+/**
+ * __useLogoutMutation__
+ *
+ * To run a mutation, you first call `useLogoutMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLogoutMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [logoutMutation, { data, loading, error }] = useLogoutMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLogoutMutation(baseOptions?: Apollo.MutationHookOptions<LogoutMutation, LogoutMutationVariables>) {
+        return Apollo.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument, baseOptions);
+      }
+export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
+export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
+export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RegisterDocument = gql`
     mutation Register($options: UsernamePasswordInput!) {
   register(options: $options) {
@@ -575,10 +702,31 @@ export const RegisterDocument = gql`
   }
 }
     ${RegularUserResponseFragmentDoc}`;
+export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
 
-export function useRegisterMutation() {
-  return Urql.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument);
-};
+/**
+ * __useRegisterMutation__
+ *
+ * To run a mutation, you first call `useRegisterMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegisterMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [registerMutation, { data, loading, error }] = useRegisterMutation({
+ *   variables: {
+ *      options: // value for 'options'
+ *   },
+ * });
+ */
+export function useRegisterMutation(baseOptions?: Apollo.MutationHookOptions<RegisterMutation, RegisterMutationVariables>) {
+        return Apollo.useMutation<RegisterMutation, RegisterMutationVariables>(RegisterDocument, baseOptions);
+      }
+export type RegisterMutationHookResult = ReturnType<typeof useRegisterMutation>;
+export type RegisterMutationResult = Apollo.MutationResult<RegisterMutation>;
+export type RegisterMutationOptions = Apollo.BaseMutationOptions<RegisterMutation, RegisterMutationVariables>;
 export const SubscribeToQueueDocument = gql`
     mutation SubscribeToQueue($id: Int!) {
   subscribeTo(id: $id) {
@@ -586,10 +734,31 @@ export const SubscribeToQueueDocument = gql`
   }
 }
     ${RegularQueueFragmentDoc}`;
+export type SubscribeToQueueMutationFn = Apollo.MutationFunction<SubscribeToQueueMutation, SubscribeToQueueMutationVariables>;
 
-export function useSubscribeToQueueMutation() {
-  return Urql.useMutation<SubscribeToQueueMutation, SubscribeToQueueMutationVariables>(SubscribeToQueueDocument);
-};
+/**
+ * __useSubscribeToQueueMutation__
+ *
+ * To run a mutation, you first call `useSubscribeToQueueMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSubscribeToQueueMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [subscribeToQueueMutation, { data, loading, error }] = useSubscribeToQueueMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSubscribeToQueueMutation(baseOptions?: Apollo.MutationHookOptions<SubscribeToQueueMutation, SubscribeToQueueMutationVariables>) {
+        return Apollo.useMutation<SubscribeToQueueMutation, SubscribeToQueueMutationVariables>(SubscribeToQueueDocument, baseOptions);
+      }
+export type SubscribeToQueueMutationHookResult = ReturnType<typeof useSubscribeToQueueMutation>;
+export type SubscribeToQueueMutationResult = Apollo.MutationResult<SubscribeToQueueMutation>;
+export type SubscribeToQueueMutationOptions = Apollo.BaseMutationOptions<SubscribeToQueueMutation, SubscribeToQueueMutationVariables>;
 export const UnSubscribeFromQueueDocument = gql`
     mutation unSubscribeFromQueue($id: Int!, $slipId: Int!) {
   unsubscribeFrom(id: $id, slipId: $slipId) {
@@ -597,10 +766,32 @@ export const UnSubscribeFromQueueDocument = gql`
   }
 }
     ${RegularQueueFragmentDoc}`;
+export type UnSubscribeFromQueueMutationFn = Apollo.MutationFunction<UnSubscribeFromQueueMutation, UnSubscribeFromQueueMutationVariables>;
 
-export function useUnSubscribeFromQueueMutation() {
-  return Urql.useMutation<UnSubscribeFromQueueMutation, UnSubscribeFromQueueMutationVariables>(UnSubscribeFromQueueDocument);
-};
+/**
+ * __useUnSubscribeFromQueueMutation__
+ *
+ * To run a mutation, you first call `useUnSubscribeFromQueueMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnSubscribeFromQueueMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unSubscribeFromQueueMutation, { data, loading, error }] = useUnSubscribeFromQueueMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      slipId: // value for 'slipId'
+ *   },
+ * });
+ */
+export function useUnSubscribeFromQueueMutation(baseOptions?: Apollo.MutationHookOptions<UnSubscribeFromQueueMutation, UnSubscribeFromQueueMutationVariables>) {
+        return Apollo.useMutation<UnSubscribeFromQueueMutation, UnSubscribeFromQueueMutationVariables>(UnSubscribeFromQueueDocument, baseOptions);
+      }
+export type UnSubscribeFromQueueMutationHookResult = ReturnType<typeof useUnSubscribeFromQueueMutation>;
+export type UnSubscribeFromQueueMutationResult = Apollo.MutationResult<UnSubscribeFromQueueMutation>;
+export type UnSubscribeFromQueueMutationOptions = Apollo.BaseMutationOptions<UnSubscribeFromQueueMutation, UnSubscribeFromQueueMutationVariables>;
 export const MeDocument = gql`
     query Me {
   me {
@@ -609,9 +800,30 @@ export const MeDocument = gql`
 }
     ${RegularUserFragmentDoc}`;
 
-export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
-};
+/**
+ * __useMeQuery__
+ *
+ * To run a query within a React component, call `useMeQuery` and pass it any options that fit your needs.
+ * When your component renders, `useMeQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useMeQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useMeQuery(baseOptions?: Apollo.QueryHookOptions<MeQuery, MeQueryVariables>) {
+        return Apollo.useQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+      }
+export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery, MeQueryVariables>) {
+          return Apollo.useLazyQuery<MeQuery, MeQueryVariables>(MeDocument, baseOptions);
+        }
+export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
+export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
+export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const QueuesDocument = gql`
     query Queues($limit: Int!, $cursor: String) {
   queues(limit: $limit, cursor: $cursor) {
@@ -623,9 +835,32 @@ export const QueuesDocument = gql`
 }
     ${RegularQueueFragmentDoc}`;
 
-export function useQueuesQuery(options: Omit<Urql.UseQueryArgs<QueuesQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<QueuesQuery>({ query: QueuesDocument, ...options });
-};
+/**
+ * __useQueuesQuery__
+ *
+ * To run a query within a React component, call `useQueuesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useQueuesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQueuesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useQueuesQuery(baseOptions: Apollo.QueryHookOptions<QueuesQuery, QueuesQueryVariables>) {
+        return Apollo.useQuery<QueuesQuery, QueuesQueryVariables>(QueuesDocument, baseOptions);
+      }
+export function useQueuesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QueuesQuery, QueuesQueryVariables>) {
+          return Apollo.useLazyQuery<QueuesQuery, QueuesQueryVariables>(QueuesDocument, baseOptions);
+        }
+export type QueuesQueryHookResult = ReturnType<typeof useQueuesQuery>;
+export type QueuesLazyQueryHookResult = ReturnType<typeof useQueuesLazyQuery>;
+export type QueuesQueryResult = Apollo.QueryResult<QueuesQuery, QueuesQueryVariables>;
 export const QueueDocument = gql`
     query Queue($id: Int!) {
   queue(id: $id) {
@@ -634,9 +869,31 @@ export const QueueDocument = gql`
 }
     ${RegularQueueFragmentDoc}`;
 
-export function useQueueQuery(options: Omit<Urql.UseQueryArgs<QueueQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<QueueQuery>({ query: QueueDocument, ...options });
-};
+/**
+ * __useQueueQuery__
+ *
+ * To run a query within a React component, call `useQueueQuery` and pass it any options that fit your needs.
+ * When your component renders, `useQueueQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useQueueQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useQueueQuery(baseOptions: Apollo.QueryHookOptions<QueueQuery, QueueQueryVariables>) {
+        return Apollo.useQuery<QueueQuery, QueueQueryVariables>(QueueDocument, baseOptions);
+      }
+export function useQueueLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<QueueQuery, QueueQueryVariables>) {
+          return Apollo.useLazyQuery<QueueQuery, QueueQueryVariables>(QueueDocument, baseOptions);
+        }
+export type QueueQueryHookResult = ReturnType<typeof useQueueQuery>;
+export type QueueLazyQueryHookResult = ReturnType<typeof useQueueLazyQuery>;
+export type QueueQueryResult = Apollo.QueryResult<QueueQuery, QueueQueryVariables>;
 export const SlipsDocument = gql`
     query Slips($limit: Int!, $cursor: String) {
   slips(limit: $limit, cursor: $cursor) {
@@ -648,9 +905,32 @@ export const SlipsDocument = gql`
 }
     ${RegularSlipFragmentDoc}`;
 
-export function useSlipsQuery(options: Omit<Urql.UseQueryArgs<SlipsQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<SlipsQuery>({ query: SlipsDocument, ...options });
-};
+/**
+ * __useSlipsQuery__
+ *
+ * To run a query within a React component, call `useSlipsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSlipsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSlipsQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      cursor: // value for 'cursor'
+ *   },
+ * });
+ */
+export function useSlipsQuery(baseOptions: Apollo.QueryHookOptions<SlipsQuery, SlipsQueryVariables>) {
+        return Apollo.useQuery<SlipsQuery, SlipsQueryVariables>(SlipsDocument, baseOptions);
+      }
+export function useSlipsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SlipsQuery, SlipsQueryVariables>) {
+          return Apollo.useLazyQuery<SlipsQuery, SlipsQueryVariables>(SlipsDocument, baseOptions);
+        }
+export type SlipsQueryHookResult = ReturnType<typeof useSlipsQuery>;
+export type SlipsLazyQueryHookResult = ReturnType<typeof useSlipsLazyQuery>;
+export type SlipsQueryResult = Apollo.QueryResult<SlipsQuery, SlipsQueryVariables>;
 export const SlipDocument = gql`
     query Slip($id: Int!) {
   slip(id: $id) {
@@ -659,6 +939,28 @@ export const SlipDocument = gql`
 }
     ${RegularSlipFragmentDoc}`;
 
-export function useSlipQuery(options: Omit<Urql.UseQueryArgs<SlipQueryVariables>, 'query'> = {}) {
-  return Urql.useQuery<SlipQuery>({ query: SlipDocument, ...options });
-};
+/**
+ * __useSlipQuery__
+ *
+ * To run a query within a React component, call `useSlipQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSlipQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSlipQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useSlipQuery(baseOptions: Apollo.QueryHookOptions<SlipQuery, SlipQueryVariables>) {
+        return Apollo.useQuery<SlipQuery, SlipQueryVariables>(SlipDocument, baseOptions);
+      }
+export function useSlipLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SlipQuery, SlipQueryVariables>) {
+          return Apollo.useLazyQuery<SlipQuery, SlipQueryVariables>(SlipDocument, baseOptions);
+        }
+export type SlipQueryHookResult = ReturnType<typeof useSlipQuery>;
+export type SlipLazyQueryHookResult = ReturnType<typeof useSlipLazyQuery>;
+export type SlipQueryResult = Apollo.QueryResult<SlipQuery, SlipQueryVariables>;

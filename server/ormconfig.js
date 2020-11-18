@@ -11,6 +11,6 @@ module.exports = {
   logging: process.env.DB_LOGGING === "true",
   synchronize: process.env.DB_SYNCHRONIZE === "true",
 
-  entities: [path.join(__dirname, "./entities/*")],
-  migrations: [path.join(__dirname, "./migrations/*")],
+  entities: [path.join(__dirname, "dist/entities/*.js")],
+  migrations: [path.join(__dirname, "dist/migrations/*.js")],
 }

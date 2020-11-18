@@ -5,27 +5,34 @@ import { usePrevious } from "@chakra-ui/core"
 import { StoreContext, StoreContextType } from "state/app"
 import { isServer } from "./isServer"
 
-export const useIsAuth = (args = { pause: isServer() }) => {
+export const useIsAuth = (args = { skip: isServer() }) => {
   const router = useRouter()
 
   const {
     dispatch,
-    // state: { user },
-  }: StoreContextType = useContext(StoreContext)
+  }: // state: { user },
+  StoreContextType = useContext(StoreContext)
 
   // TODO: This should not fetch on rerender if data is already there
-  const [{ data, fetching }] = useMeQuery(args)
+  const { data, loading } = useMeQuery(args)
 
   const prevMe = usePrevious(data)
   useEffect(() => {
-    if (!fetching && !data?.me && !router.pathname.startsWith("/login")) {
+    console.log({data})
+
+    if (
+      !loading &&
+      !data?.me &&
+      !router.pathname.startsWith("/login") &&
+      !router.pathname.startsWith("/register")
+    ) {
       router.replace("/login?next=" + router.pathname)
     }
 
     if (!prevMe && data?.me) {
       dispatch({ type: "me", payload: data.me })
     }
-  }, [fetching, data, router])
+  }, [loading, data, router])
 
-  return { data, fetching }
+  return { data, loading }
 }

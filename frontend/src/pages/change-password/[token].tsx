@@ -1,13 +1,11 @@
 import { Box, Button, Flex } from "@chakra-ui/core"
 import { Form, Formik } from "formik"
 import { NextPage } from "next"
-import { withUrqlClient } from "next-urql"
 import { useRouter } from "next/router"
 import React from "react"
 import InputField from "../../components/InputField"
 import Layout from "../../components/Layout"
 import { useChangeForgotPasswordMutation } from "../../generated/graphql"
-import { createUrqlClient } from "../../utils/createUrqlClient"
 import { toErrorMap } from "../../utils/toErrorMap"
 
 interface ChangePasswordProps {}
@@ -16,7 +14,7 @@ const ChangePassword: NextPage<ChangePasswordProps> = () => {
   const router = useRouter()
   const navigateToForgotLogin = () => router.push("/login")
 
-  const [, changeForgotPassword] = useChangeForgotPasswordMutation()
+  const [changeForgotPassword] = useChangeForgotPasswordMutation()
   return (
     <Layout variant="small">
       <Formik
@@ -31,8 +29,10 @@ const ChangePassword: NextPage<ChangePasswordProps> = () => {
           }
 
           const response = await changeForgotPassword({
-            newPassword: values.newPassword,
-            token: (router.query?.token as string | undefined) ?? "",
+            variables: {
+              newPassword: values.newPassword,
+              token: (router.query?.token as string | undefined) ?? "",
+            },
           })
           if (response.data?.changeForgotPassword.errors) {
             const errorMap = toErrorMap(
@@ -88,4 +88,4 @@ const ChangePassword: NextPage<ChangePasswordProps> = () => {
   )
 }
 
-export default withUrqlClient(createUrqlClient)(ChangePassword)
+export default ChangePassword
