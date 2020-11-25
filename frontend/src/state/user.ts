@@ -11,7 +11,7 @@ export const userInitialState = {
 export default function userReducer(state: object, action: actionType) {
   switch (action.type) {
     case "me":
-      return { ...state, ...action.payload }
+      return { ...state, ...(action.payload as object) }
 
     case "logout":
       clearAllSettings()

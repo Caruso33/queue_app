@@ -4,9 +4,9 @@ import React, { createContext, useMemo, useReducer } from "react"
 import combineReducers from "utils/combineReducers"
 import userReducer, { userInitialState } from "./user"
 
-export const StoreContext = createContext()
-
 export const initialState = { user: userInitialState }
+
+export const StoreContext = createContext(initialState)
 
 function rootReducer(state: object, action: actionType) {
   switch (action.type) {
@@ -22,7 +22,7 @@ function rootReducer(state: object, action: actionType) {
 
 const appReducer = combineReducers({ user: userReducer })
 
-const StoreProvider = ({ children }) => {
+const StoreProvider = ({ children }: { children: React.ReactChildren }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState)
 
   // Important(!): memoize array value. Else all context consumers update on *every* render

@@ -9,15 +9,18 @@ const ormConfig: ConnectionOptions = require("../../ormconfig")
 export default async function configureDB() {
   const orm = await createConnection(ormConfig)
 
-  const redisClient = new Redis({
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT as string),
-  })
+  const host = process.env.REDIS_HOST
+  const port = parseInt(process.env.REDIS_PORT as string)
+
+  const redisClient = new Redis({ host, port })
 
   const RedisStore = connectRedis(session)
 
   const redisStore = new RedisStore({ client: redisClient })
-  const redisPubsub = new RedisPubSub()
+  const redisPubsub = new RedisPubSub({
+    publisher: redisClient,
+    subscriber: redisClient,
+  })
 
   return { redisStore, redisClient, redisPubsub, orm }
 }
