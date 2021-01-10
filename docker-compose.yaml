@@ -1,13 +1,13 @@
 version: "3"
 services:
-  # frontend:
-  #   container_name: frontend
-  #   build: ./frontend
-  #   restart: unless-stopped
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    restart: unless-stopped
 
-  #   volumes:
-  #     - /app/node_modules
-  #     - ./frontend:/app
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
 
   server:
     container_name: server
