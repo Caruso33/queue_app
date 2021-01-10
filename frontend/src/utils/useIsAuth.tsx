@@ -31,5 +31,5 @@ export const useIsAuth = (args = { skip: isServer() }) => {
     }
   }, [loading, data, router])
 
-  return { data, loading }
+  return { data, loading, isAuth: data?.me?.id }
 }

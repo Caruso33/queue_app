@@ -2,6 +2,7 @@ import { Box, Button, Flex, useToast } from "@chakra-ui/core"
 import { Form, Formik, FormikProps } from "formik"
 import { useRouter } from "next/router"
 import React from "react"
+import { useIsAuth } from "utils/useIsAuth"
 import InputField from "../components/InputField"
 import Layout from "../components/Layout"
 import {
@@ -15,7 +16,14 @@ interface LoginProps {}
 const Login: React.FC<LoginProps> = () => {
   const router = useRouter()
 
+  const pushToNextPage = () => {
+    router.push((router.query?.next as string | undefined) ?? "/")
+  }
+
   const toast = useToast()
+
+  const { isAuth } = useIsAuth()
+  if (isAuth) pushToNextPage() // already signed-in
 
   const [login] = useLoginMutation()
   const [forgotPassword, { loading }] = useForgotPasswordMutation()
@@ -72,7 +80,7 @@ const Login: React.FC<LoginProps> = () => {
           if (response.data?.login.errors) {
             actions.setErrors(toErrorMap(response.data.login.errors))
           } else if (response.data?.login.user) {
-            router.push((router.query?.next as string | undefined) ?? "/")
+            pushToNextPage()
           }
         }}
       >

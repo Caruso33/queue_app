@@ -2,6 +2,7 @@ import { Box, Button } from "@chakra-ui/core"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import React from "react"
+import { useIsAuth } from "utils/useIsAuth"
 import InputField from "../components/InputField"
 import Layout from "../components/Layout"
 import { useRegisterMutation } from "../generated/graphql"
@@ -11,6 +12,13 @@ interface RegisterProps {}
 
 const Register: React.FC<RegisterProps> = () => {
   const router = useRouter()
+
+  const pushToNextPage = () => {
+    router.push("/")
+  }
+
+  const { isAuth } = useIsAuth()
+  if (isAuth) pushToNextPage() // already signed-in
 
   const [register] = useRegisterMutation()
 
@@ -24,7 +32,7 @@ const Register: React.FC<RegisterProps> = () => {
           if (response.data?.register.errors) {
             actions.setErrors(toErrorMap(response.data.register.errors))
           } else if (response.data?.register.user) {
-            router.push("/")
+            pushToNextPage()
           }
         }}
       >
